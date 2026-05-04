@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Přesčasový účet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FAF8F5;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 22px 40px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            background: white;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon { font-size: 1.4rem; }
+        .logo span { color: #F5612C; }
+
+        .hero {
+            text-align: center;
+            padding: 64px 20px 40px;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 0.97rem;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .hero p strong { color: #1a1a1a; }
+
+        .rule-box {
+            max-width: 520px;
+            margin: 40px auto 0;
+            background: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #FDE8DF;
+            color: #F5612C;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+
+        .rule-box ul { list-style: none; }
+
+        .rule-box ul li {
+            padding: 6px 0;
+            font-size: 0.93rem;
+            color: #444;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.5;
+        }
+
+        .rule-box ul li::before {
+            content: "•";
+            color: #F5612C;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #e8e5e0;
+            max-width: 900px;
+            margin: 52px auto 0;
+        }
+
+        .cards-section { padding: 48px 20px 20px; }
+
+        .cards-section h2 {
+            text-align: center;
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .cards-section .subtitle {
+            text-align: center;
+            font-size: 0.83rem;
+            color: #999;
+            margin-bottom: 36px;
+        }
+
+        .cards-grid {
+            display: flex;
+            gap: 22px;
+            max-width: 900px;
+            margin: 0 auto;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px 28px 28px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+            flex: 1;
+            min-width: 240px;
+            max-width: 270px;
+            position: relative;
+        }
+
+        .card.highlighted {
+            border: 2.5px solid #F5612C;
+            padding-top: 38px;
+        }
+
+        .recommended-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #F5612C;
+            color: white;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 4px 16px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .card-badge {
+            display: inline-block;
+            background: #FDE8DF;
+            color: #F5612C;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .hours-display {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            line-height: 1.1;
+            margin: 6px 0 14px;
+        }
+
+        .hours-display .unit {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #aaa;
+        }
+
+        .hours-display.orange { color: #F5612C; }
+
+        .card-desc {
+            font-size: 0.83rem;
+            color: #777;
+            line-height: 1.55;
+        }
+
+        .edit-input {
+            display: none;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            border: 2px solid #F5612C;
+            border-radius: 10px;
+            padding: 6px 12px;
+            margin: 6px 0 14px;
+            text-align: center;
+            outline: none;
+            background: #FFF8F5;
+        }
+
+        .message-section {
+            max-width: 700px;
+            margin: 36px auto 20px;
+            padding: 0 20px;
+        }
+
+        .funny-message {
+            background: white;
+            border-radius: 16px;
+            padding: 32px 36px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+            text-align: center;
+            border-top: 4px solid #F5612C;
+        }
+
+        .funny-message .emoji { font-size: 2.6rem; margin-bottom: 12px; }
+
+        .funny-message p {
+            font-size: 1rem;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.65;
+        }
+
+        .controls {
+            text-align: center;
+            margin: 28px 0 60px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #F5612C;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 0.93rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.18s, transform 0.1s;
+        }
+
+        .btn:hover { background: #d94e22; transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-secondary {
+            background: white;
+            color: #F5612C;
+            border: 2px solid #F5612C;
+        }
+
+        .btn-secondary:hover { background: #FDE8DF; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 44px 40px 36px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+        }
+
+        .modal .modal-icon { font-size: 2.4rem; margin-bottom: 14px; }
+
+        .modal h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .modal p {
+            font-size: 0.88rem;
+            color: #888;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 13px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .modal input:focus { border-color: #F5612C; }
+
+        .pw-error {
+            color: #e53935;
+            font-size: 0.83rem;
+            margin-bottom: 12px;
+            min-height: 20px;
+            display: none;
+        }
+
+        .pw-error.show { display: block; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #bbb;
+            cursor: pointer;
+            font-size: 0.88rem;
+            margin-top: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.15s;
+        }
+
+        .modal-close:hover { color: #888; }
+
+        footer {
+            text-align: center;
+            padding: 22px 20px;
+            font-size: 0.8rem;
+            color: #ccc;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.9rem; }
+            .card { max-width: 100%; }
+            header { padding: 18px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <span class="logo-icon">⏱</span>
+        Přesčas<span>ový účet</span>
+    </div>
+</header>
+
+<div class="hero">
+    <h1>Evidence neplaceného přesčasu</h1>
+    <p>
+        Každé oslovení <strong>"šéfová"</strong> je okamžitě převedeno na <strong>1 hodinu neplaceného přesčasu</strong>.
+        Tato aplikace slouží jako oficiální, průběžně aktualizovaná a nezpochybnitelná evidence.
+        Odvolání se nepřijímají. Slovník je zdarma.
+    </p>
+</div>
+
+<div class="rule-box">
+    <span class="badge">Sazebník</span>
+    <ul>
+        <li>1× oslovení „šéfová" = 1 hodina neplaceného přesčasu</li>
+        <li>Přesčasy se nedají vymazat — pouze odpracovat</li>
+        <li>Evidence je průběžně aktualizována v reálném čase</li>
+        <li>Amnestie není v plánu</li>
+    </ul>
+</div>
+
+<hr class="divider">
+
+<div class="cards-section">
+    <h2>Aktuální stav účtu</h2>
+    <p class="subtitle">Stav ke dni <span id="currentDate"></span></p>
+
+    <div class="cards-grid">
+
+        <div class="card">
+            <span class="card-badge">Naúčtováno</span>
+            <h3>Celkem přesčasů</h3>
+            <div id="display-total" class="hours-display">
+                <span id="val-total">4</span> <span class="unit">hod.</span>
+            </div>
+            <input type="number" id="input-total" class="edit-input" min="0" value="4">
+            <p class="card-desc">Celkový počet oslovení „šéfová" přepočítaný na hodiny neplaceného přesčasu.</p>
+        </div>
+
+        <div class="card highlighted">
+            <span class="recommended-badge">Aktuální dluh</span>
+            <span class="card-badge">Zbývá</span>
+            <h3>Ještě odpracovat</h3>
+            <div class="hours-display orange">
+                <span id="val-remaining">4</span> <span class="unit">hod.</span>
+            </div>
+            <p class="card-desc">Tolik hodin neplaceného přesčasu čeká na odpracování. Toto číslo nechcete vidět růst.</p>
+        </div>
+
+        <div class="card">
+            <span class="card-badge">Odpracováno</span>
+            <h3>Splaceno</h3>
+            <div id="display-worked" class="hours-display">
+                <span id="val-worked">0</span> <span class="unit">hod.</span>
+            </div>
+            <input type="number" id="input-worked" class="edit-input" min="0" value="0">
+            <p class="card-desc">Počet hodin, které již byly řádně odpracovány. Správný směr.</p>
+        </div>
+
+    </div>
+</div>
+
+<div class="message-section">
+    <div class="funny-message">
+        <div class="emoji" id="msg-emoji">⏳</div>
+        <p id="msg-text"></p>
+    </div>
+</div>
+
+<div class="controls">
+    <button class="btn" id="edit-btn" onclick="openPasswordModal()">🔒 Upravit hodnoty</button>
+    <button class="btn" id="save-btn" style="display:none" onclick="saveValues()">Uložit</button>
+    <button class="btn btn-secondary" id="cancel-btn" style="display:none" onclick="cancelEdit()">Zrušit</button>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+        <div class="modal-icon">🔐</div>
+        <h3>Přístup pro šéfovou</h3>
+        <p>Tato sekce je určena pouze pro oprávněné osoby.<br>Zadejte prosím heslo.</p>
+        <input type="password" id="password-input" placeholder="Heslo…"
+               onkeydown="if(event.key==='Enter') checkPassword()">
+        <div class="pw-error" id="pw-error">Špatné heslo. Tady si nepomůžeš, kolego. 😏</div>
+        <button class="btn" onclick="checkPassword()" style="width:100%">Potvrdit</button>
+        <br>
+        <button class="modal-close" onclick="closeModal()">Zrušit</button>
+    </div>
+</div>
+
+<footer>
+    Přesčasový účet &copy; 2025 &nbsp;·&nbsp; Spravedlnost existuje. Jen ji musíš odpracovat.
+</footer>
+
+<script>
+    const PASSWORD = 'sefovatresta';
+
+    let totalHours  = parseInt(localStorage.getItem('pc_total')  ?? '4');
+    let workedHours = parseInt(localStorage.getItem('pc_worked') ?? '0');
+
+    const messages = [
+        {
+            max: 0,
+            emoji: '🎉',
+            text: 'Čistý štít! Nevěřme v dlouhé trvání.'
+        },
+        {
+            max: 2,
+            emoji: '😬',
+            text: 'Možná to bylo omylem. To neznamená, že ti to projde.'
+        },
+        {
+            max: 5,
+            emoji: '🤨',
+            text: 'Tohle začíná být zvyk. Zvyk, který se prodraží. Terapie na odvykání od slova „šéfová" je levnější než přesčasy.'
+        },
+        {
+            max: 10,
+            emoji: '😤',
+            text: 'Dvouciferné číslo. Opravdu? Slovník existuje. Tezaurus také. Dokonce i Google Překladač zná synonyma pro slovo „kolegyně".'
+        },
+        {
+            max: 20,
+            emoji: '😱',
+            text: 'Tohle je víc než dva celé pracovní dny přesčasu. Máš snad „šéfová" nastavenou jako klávesovou zkratku? To by hodně vysvětlovalo.'
+        },
+        {
+            max: 40,
+            emoji: '🤯',
+            text: 'Téměř celý pracovní týden neplaceného přesčasu. Zvažujeme přejmenovat tuto aplikaci na tvou počest. Legenda.'
+        },
+        {
+            max: Infinity,
+            emoji: '👑',
+            text: 'Dosáhl jsi stavu, který odborníci označují jako nenapravitelný. Tato aplikace ti bude věnována v závěti. Sláva ti.'
+        }
+    ];
+
+    function updateDisplay() {
+        const remaining = Math.max(0, totalHours - workedHours);
+        document.getElementById('val-total').textContent     = totalHours;
+        document.getElementById('val-worked').textContent    = workedHours;
+        document.getElementById('val-remaining').textContent = remaining;
+        const m = messages.find(m => remaining <= m.max);
+        document.getElementById('msg-emoji').textContent = m.emoji;
+        document.getElementById('msg-text').textContent  = m.text;
+    }
+
+    function setDate() {
+        document.getElementById('currentDate').textContent =
+            new Date().toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function openPasswordModal() {
+        document.getElementById('modal-overlay').classList.add('active');
+        document.getElementById('password-input').value = '';
+        document.getElementById('pw-error').classList.remove('show');
+        setTimeout(() => document.getElementById('password-input').focus(), 80);
+    }
+
+    function closeModal() {
+        document.getElementById('modal-overlay').classList.remove('active');
+    }
+
+    function checkPassword() {
+        if (document.getElementById('password-input').value === PASSWORD) {
+            closeModal();
+            enterEditMode();
+        } else {
+            document.getElementById('pw-error').classList.add('show');
+            document.getElementById('password-input').value = '';
+            document.getElementById('password-input').focus();
+        }
+    }
+
+    function enterEditMode() {
+        document.getElementById('input-total').value  = totalHours;
+        document.getElementById('input-worked').value = workedHours;
+
+        document.getElementById('display-total').style.display  = 'none';
+        document.getElementById('display-worked').style.display = 'none';
+        document.getElementById('input-total').style.display    = 'block';
+        document.getElementById('input-worked').style.display   = 'block';
+
+        document.getElementById('edit-btn').style.display   = 'none';
+        document.getElementById('save-btn').style.display   = 'inline-block';
+        document.getElementById('cancel-btn').style.display = 'inline-block';
+    }
+
+    function saveValues() {
+        totalHours  = Math.max(0, parseInt(document.getElementById('input-total').value)  || 0);
+        workedHours = Math.max(0, parseInt(document.getElementById('input-worked').value) || 0);
+        localStorage.setItem('pc_total',  totalHours);
+        localStorage.setItem('pc_worked', workedHours);
+        exitEditMode();
+        updateDisplay();
+    }
+
+    function cancelEdit() { exitEditMode(); }
+
+    function exitEditMode() {
+        document.getElementById('display-total').style.display  = '';
+        document.getElementById('display-worked').style.display = '';
+        document.getElementById('input-total').style.display    = 'none';
+        document.getElementById('input-worked').style.display   = 'none';
+
+        document.getElementById('edit-btn').style.display   = 'inline-block';
+        document.getElementById('save-btn').style.display   = 'none';
+        document.getElementById('cancel-btn').style.display = 'none';
+    }
+
+    document.getElementById('modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    setDate();
+    updateDisplay();
+</script>
+
+</body>
+</html>
