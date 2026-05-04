@@ -469,9 +469,12 @@
 
 <script>
     const PASSWORD = 'sefovatresta';
+    const BIN_ID   = '69f8bd02856a682189a5d67b';
+    const API_KEY  = '$2a$10$.ixV80llkXRAGZWmY98kwuW3YsRqH8fRuNPn4c8SSNyiNcPVhg2Ga';
+    const API_URL  = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-    let totalHours  = parseInt(localStorage.getItem('pc_total')  ?? '4');
-    let workedHours = parseInt(localStorage.getItem('pc_worked') ?? '0');
+    let totalHours  = 4;
+    let workedHours = 0;
 
     const messages = [
         {
@@ -521,6 +524,42 @@
         document.getElementById('msg-text').textContent  = m.text;
     }
 
+    async function loadData() {
+        try {
+            const res  = await fetch(`${API_URL}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            const json = await res.json();
+            totalHours  = json.record.total;
+            workedHours = json.record.worked;
+            updateDisplay();
+        } catch(e) {
+            document.getElementById('msg-emoji').textContent = '⚠️';
+            document.getElementById('msg-text').textContent  = 'Nepodařilo se načíst data. Zkontroluj připojení k internetu.';
+        }
+    }
+
+    async function saveData() {
+        const btn = document.getElementById('save-btn');
+        btn.textContent = 'Ukládám…';
+        btn.disabled = true;
+        try {
+            await fetch(API_URL, {
+                method:  'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify({ total: totalHours, worked: workedHours })
+            });
+        } catch(e) {
+            alert('Chyba při ukládání. Zkus to znovu.');
+        } finally {
+            btn.textContent = 'Uložit';
+            btn.disabled = false;
+        }
+    }
+
     function setDate() {
         document.getElementById('currentDate').textContent =
             new Date().toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -562,13 +601,12 @@
         document.getElementById('cancel-btn').style.display = 'inline-block';
     }
 
-    function saveValues() {
+    async function saveValues() {
         totalHours  = Math.max(0, parseInt(document.getElementById('input-total').value)  || 0);
         workedHours = Math.max(0, parseInt(document.getElementById('input-worked').value) || 0);
-        localStorage.setItem('pc_total',  totalHours);
-        localStorage.setItem('pc_worked', workedHours);
-        exitEditMode();
         updateDisplay();
+        exitEditMode();
+        await saveData();
     }
 
     function cancelEdit() { exitEditMode(); }
@@ -589,7 +627,9 @@
     });
 
     setDate();
-    updateDisplay();
+    loadData();
+    // Automaticky obnovuje data každých 30 sekund
+    setInterval(loadData, 30000);
 </script>
 
 </body>
