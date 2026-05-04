@@ -544,7 +544,7 @@
         btn.textContent = 'Ukládám…';
         btn.disabled = true;
         try {
-            await fetch(API_URL, {
+            const res = await fetch(API_URL, {
                 method:  'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -552,8 +552,12 @@
                 },
                 body: JSON.stringify({ total: totalHours, worked: workedHours })
             });
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(`Server vrátil chybu ${res.status}: ${errText}`);
+            }
         } catch(e) {
-            alert('Chyba při ukládání. Zkus to znovu.');
+            alert('Chyba při ukládání:\n' + e.message + '\n\nZkopíruj tuto zprávu a pošli ji.');
         } finally {
             btn.textContent = 'Uložit';
             btn.disabled = false;
