@@ -474,7 +474,7 @@
 <script>
     const PASSWORD = 'sefovatresta';
     const BIN_ID   = '69f8bd02856a682189a5d67b';
-    const API_KEY  = '$2a$10$.ixV80llkXRAGZWmY98kwuW3YsRqH8fRuNPn4c8SSNyiNcPVhg2Ga';
+    const API_KEY  = '$2a$10$vHleyvrBlWoOa5curljGX.v6E1GyvH.I5pfPu6eG06WkvO3m1ACCG';
     const API_URL  = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
     let totalHours  = 4;
@@ -499,7 +499,7 @@
         {
             max: 10,
             emoji: '😤',
-            text: 'Opravdu? Slovník existuje. Tezaurus také. Dokonce i Google Překladač zná synonyma pro slovo „kolegyně".'
+            text: 'Dvouciferné číslo. Opravdu? Slovník existuje. Tezaurus také. Dokonce i Google Překladač zná synonyma pro slovo „kolegyně".'
         },
         {
             max: 20,
@@ -531,7 +531,7 @@
     async function loadData() {
         try {
             const res  = await fetch(`${API_URL}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
+                headers: { 'X-Access-Key': API_KEY }
             });
             const json = await res.json();
             totalHours  = json.record.total;
@@ -552,7 +552,7 @@
                 method:  'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Master-Key': API_KEY
+                    'X-Access-Key': API_KEY
                 },
                 body: JSON.stringify({ total: totalHours, worked: workedHours })
             });
