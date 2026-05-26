@@ -468,14 +468,12 @@
 </div>
 
 <footer>
-    Přesčasový účet &copy; 2026 &nbsp;·&nbsp; Spravedlnost existuje. Jen ji musíš odpracovat.
+    Přesčasový účet &copy; 2025 &nbsp;·&nbsp; Spravedlnost existuje. Jen ji musíš odpracovat.
 </footer>
 
 <script>
-    const PASSWORD = 'sefovatresta';
-    const BIN_ID   = '69f8bd02856a682189a5d67b';
-    const API_KEY  = '$2a$10$vHleyvrBlWoOa5curljGX.v6E1GyvH.I5pfPu6eG06WkvO3m1ACCG';
-    const API_URL  = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const PASSWORD     = 'sefovatresta';
+    const FIREBASE_URL = 'https://prescasovy-ucet-default-rtdb.europe-west1.firebasedatabase.app/data.json';
 
     let totalHours  = 4;
     let workedHours = 0;
@@ -499,7 +497,7 @@
         {
             max: 10,
             emoji: '😤',
-            text: 'Opravdu? Slovník existuje. Tezaurus také. Dokonce i Google Překladač zná synonyma pro slovo „kolegyně".'
+            text: 'Dvouciferné číslo. Opravdu? Slovník existuje. Tezaurus také. Dokonce i Google Překladač zná synonyma pro slovo „kolegyně".'
         },
         {
             max: 20,
@@ -530,12 +528,12 @@
 
     async function loadData() {
         try {
-            const res  = await fetch(`${API_URL}/latest`, {
-                headers: { 'X-Access-Key': API_KEY }
-            });
+            const res  = await fetch(FIREBASE_URL);
             const json = await res.json();
-            totalHours  = json.record.total;
-            workedHours = json.record.worked;
+            if (json && json.total !== undefined) {
+                totalHours  = json.total;
+                workedHours = json.worked;
+            }
             updateDisplay();
         } catch(e) {
             document.getElementById('msg-emoji').textContent = '⚠️';
@@ -548,18 +546,12 @@
         btn.textContent = 'Ukládám…';
         btn.disabled = true;
         try {
-            const res = await fetch(API_URL, {
+            const res = await fetch(FIREBASE_URL, {
                 method:  'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Access-Key': API_KEY
-                },
-                body: JSON.stringify({ total: totalHours, worked: workedHours })
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ total: totalHours, worked: workedHours })
             });
-            if (!res.ok) {
-                const errText = await res.text();
-                throw new Error(`Server vrátil chybu ${res.status}: ${errText}`);
-            }
+            if (!res.ok) throw new Error(`Chyba ${res.status}`);
         } catch(e) {
             alert('Chyba při ukládání:\n' + e.message + '\n\nZkopíruj tuto zprávu a pošli ji.');
         } finally {
